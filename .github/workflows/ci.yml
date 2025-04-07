@@ -45,6 +45,8 @@ jobs:
             --apiurl https://$SYSDIG_SECURE_HOST \
             $IMAGE_NAME
 
+            cat /home/runner/work/sysdig-cli-scan-demo/sysdig-cli-scan-demo/scan-logs
+
       - name: Wait for scan results to propagate (optional)
         run: sleep 30
 
