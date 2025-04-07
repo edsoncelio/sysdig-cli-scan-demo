@@ -28,12 +28,6 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
-      - name: Get Image Digest
-        id: digest
-        run: |
-          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_NAME | cut -d@ -f2)
-          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
-
       - name: Download Sysdig CLI Scanner
         run: |
           curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
@@ -41,11 +35,10 @@ jobs:
 
       - name: Scan Image with Sysdig
         run: |
-          SECURE_API_TOKEN=$SYSDIG_API_TOKEN ./sysdig-cli-scanner \
+          IMAGE_ID=$(SECURE_API_TOKEN=$SYSDIG_API_TOKEN ./sysdig-cli-scanner \
             --apiurl https://$SYSDIG_SECURE_HOST \
-            $IMAGE_NAME --policy sysdig-best-practices || true
-
-            cat /home/runner/work/sysdig-cli-scan-demo/sysdig-cli-scan-demo/scan-logs || true
+            $IMAGE_NAME --policy sysdig-best-practices | grep 'ImageID:' | cut -d' ' -f2)
+             echo "imageID=$IMAGE_ID" >> $GITHUB_OUTPUT
 
       - name: Wait for scan results to propagate (optional)
         run: sleep 30
@@ -54,7 +47,7 @@ jobs:
         run: |
           curl -s -X GET \
             -H "Authorization: Bearer $SYSDIG_API_TOKEN" \
-            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=sha256:${{ steps.digest.outputs.digest }}&assetType=container-image" \
+            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=sha256:${{ steps.digest.outputs.imageID }}&assetType=container-image" \
             -o sbom.json
 
       - name: Cat SBOM
