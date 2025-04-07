@@ -43,9 +43,9 @@ jobs:
         run: |
           SECURE_API_TOKEN=$SYSDIG_API_TOKEN ./sysdig-cli-scanner \
             --apiurl https://$SYSDIG_SECURE_HOST \
-            $IMAGE_NAME || true
+            $IMAGE_NAME --policy sysdig-best-practices || true
 
-            cat /home/runner/work/sysdig-cli-scan-demo/sysdig-cli-scan-demo/scan-logs
+            cat /home/runner/work/sysdig-cli-scan-demo/sysdig-cli-scan-demo/scan-logs || true
 
       - name: Wait for scan results to propagate (optional)
         run: sleep 30
