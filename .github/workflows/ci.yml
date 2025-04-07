@@ -48,7 +48,7 @@ jobs:
         run: |
           curl -s -X GET \
             -H "Authorization: Bearer $SYSDIG_API_TOKEN" \
-            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=sha256:${{ steps.scan.outputs.imageID }}&assetType=container-image" \
+            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=${{ steps.scan.outputs.imageID }}&assetType=container-image" \
             -o sbom.json
 
       - name: Cat SBOM
