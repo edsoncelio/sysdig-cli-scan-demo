@@ -34,6 +34,7 @@ jobs:
           chmod +x sysdig-cli-scanner
 
       - name: Scan Image with Sysdig
+        id: scan
         run: |
           IMAGE_ID=$(SECURE_API_TOKEN=$SYSDIG_API_TOKEN ./sysdig-cli-scanner \
             --apiurl https://$SYSDIG_SECURE_HOST \
@@ -47,7 +48,7 @@ jobs:
         run: |
           curl -s -X GET \
             -H "Authorization: Bearer $SYSDIG_API_TOKEN" \
-            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=sha256:${{ steps.digest.outputs.imageID }}&assetType=container-image" \
+            "https://$SYSDIG_SECURE_HOST/secure/vulnerability/v1beta1/sboms?assetId=sha256:${{ steps.scan.outputs.imageID }}&assetType=container-image" \
             -o sbom.json
 
       - name: Cat SBOM
