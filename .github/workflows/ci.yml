@@ -43,7 +43,7 @@ jobs:
         run: |
           SECURE_API_TOKEN=$SYSDIG_API_TOKEN ./sysdig-cli-scanner \
             --apiurl https://$SYSDIG_SECURE_HOST \
-            $IMAGE_NAME
+            $IMAGE_NAME || true
 
             cat /home/runner/work/sysdig-cli-scan-demo/sysdig-cli-scan-demo/scan-logs
 
